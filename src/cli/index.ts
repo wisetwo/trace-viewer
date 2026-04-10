@@ -15,7 +15,7 @@ const pkg = JSON.parse(readFileSync(resolve(__dirname, "../../package.json"), "u
 const program = new Command();
 
 program
-  .name("trace-viewer")
+  .name("llm-trace-viewer")
   .description("View LLM request trace logs in a web UI")
   .version(pkg.version)
   .argument("<path>", "Path to trace file (.jsonl) or directory")

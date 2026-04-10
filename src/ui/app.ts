@@ -41,13 +41,13 @@ export class TraceApp extends LitElement {
     // Check system preference
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     // Check stored preference
-    const stored = localStorage.getItem("trace-viewer-theme");
+    const stored = localStorage.getItem("llm-trace-viewer-theme");
     this.theme = (stored as "light" | "dark") || (prefersDark ? "dark" : "light");
     this.applyTheme();
 
     // Listen for system theme changes
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-      if (!localStorage.getItem("trace-viewer-theme")) {
+      if (!localStorage.getItem("llm-trace-viewer-theme")) {
         this.theme = e.matches ? "dark" : "light";
         this.applyTheme();
       }
@@ -61,7 +61,7 @@ export class TraceApp extends LitElement {
 
   private toggleTheme() {
     this.theme = this.theme === "light" ? "dark" : "light";
-    localStorage.setItem("trace-viewer-theme", this.theme);
+    localStorage.setItem("llm-trace-viewer-theme", this.theme);
     this.applyTheme();
   }
 

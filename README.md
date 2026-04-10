@@ -55,36 +55,36 @@ See the [Prompt Caching documentation](https://docs.openclaw.ai/reference/prompt
 
 ```bash
 # Default log location
-trace-viewer ~/.openclaw/logs/cache-trace.jsonl
+llm-trace-viewer ~/.openclaw/logs/cache-trace.jsonl
 
 # Watch mode — auto-refreshes as new entries are appended
-trace-viewer ~/.openclaw/logs/cache-trace.jsonl --watch
+llm-trace-viewer ~/.openclaw/logs/cache-trace.jsonl --watch
 ```
 
 ## Installation
 
 ```bash
 # Install globally
-npm install -g trace-viewer
+npm install -g llm-trace-viewer
 
 # Or use npx (no install required)
-npx trace-viewer ./path/to/trace.jsonl
+npx llm-trace-viewer ./path/to/trace.jsonl
 ```
 
 ## Quick Start
 
 ```bash
 # Point to a JSONL file
-trace-viewer ./logs/cache-trace.jsonl
+llm-trace-viewer ./logs/cache-trace.jsonl
 
 # Point to a directory (auto-finds *.jsonl files)
-trace-viewer ./logs/
+llm-trace-viewer ./logs/
 
 # Custom port + watch mode
-trace-viewer ./logs/trace.jsonl --port 8080 --watch
+llm-trace-viewer ./logs/trace.jsonl --port 8080 --watch
 
 # Don't auto-open browser
-trace-viewer ./logs/trace.jsonl --no-open
+llm-trace-viewer ./logs/trace.jsonl --no-open
 ```
 
 ## CLI Options
@@ -182,7 +182,7 @@ If `content` is a plain string, it is rendered as text directly. Base64 image st
 You can also use the server programmatically:
 
 ```typescript
-import { createServer } from "trace-viewer";
+import { createServer } from "llm-trace-viewer";
 
 const server = await createServer({
   port: 3000,
@@ -202,15 +202,15 @@ await server.stop();
 The package exports all type definitions for building custom integrations:
 
 ```typescript
-import type { TraceEntry, TraceSummary, TraceToolDef } from "trace-viewer/types";
+import type { TraceEntry, TraceSummary, TraceToolDef } from "llm-trace-viewer/types";
 ```
 
 ## Development
 
 ```bash
 # Clone the repo
-git clone https://github.com/wisetwo/trace-viewer.git
-cd trace-viewer
+git clone https://github.com/wisetwo/llm-trace-viewer.git
+cd llm-trace-viewer
 
 # Install dependencies
 npm install

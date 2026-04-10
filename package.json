@@ -1,5 +1,5 @@
 {
-  "name": "trace-viewer",
+  "name": "llm-trace-viewer",
   "version": "0.1.0",
   "description": "A standalone CLI tool to view LLM request trace logs (JSONL format) in a beautiful web UI",
   "keywords": [
@@ -18,14 +18,14 @@
   "author": "wisetwo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wisetwo/trace-viewer.git"
+    "url": "git+https://github.com/wisetwo/llm-trace-viewer.git"
   },
-  "homepage": "https://github.com/wisetwo/trace-viewer#readme",
+  "homepage": "https://github.com/wisetwo/llm-trace-viewer#readme",
   "bugs": {
-    "url": "https://github.com/wisetwo/trace-viewer/issues"
+    "url": "https://github.com/wisetwo/llm-trace-viewer/issues"
   },
   "bin": {
-    "trace-viewer": "./bin/trace-viewer.js"
+    "llm-trace-viewer": "./bin/trace-viewer.js"
   },
   "files": [
     "dist",
