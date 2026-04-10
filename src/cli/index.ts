@@ -3,15 +3,21 @@
  * CLI Entry Point for LLM Trace Viewer
  */
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import { Command } from "commander";
 import { createServer } from "../server/index.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(resolve(__dirname, "../../package.json"), "utf8"));
 
 const program = new Command();
 
 program
   .name("trace-viewer")
   .description("View LLM request trace logs in a web UI")
-  .version("0.1.0")
+  .version(pkg.version)
   .argument("<path>", "Path to trace file (.jsonl) or directory")
   .option("-p, --port <number>", "Port to listen on", "3000")
   .option("--no-open", "Do not open browser automatically")

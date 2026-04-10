@@ -81,7 +81,10 @@ function formatTime(value?: string | null) {
   return date.toLocaleString();
 }
 
-function stageBadgeClass(stage: TraceStage): string {
+function stageBadgeClass(stage?: TraceStage): string {
+  if (!stage) {
+    return "";
+  }
   if (stage.startsWith("session:")) {
     return "info";
   }
@@ -301,12 +304,11 @@ function renderMessage(message: unknown, index: number) {
 
 function downloadEntryAsJson(entry: TraceEntry) {
   const formatted = JSON.stringify(entry, null, 2);
-  const humanReadable = formatted.replace(/\\n/g, "\n").replace(/\\"/g, '"');
-  const blob = new Blob([humanReadable], { type: "text/plain" });
+  const blob = new Blob([formatted], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   const timestamp = entry.ts ? new Date(entry.ts).toISOString().replace(/[:.]/g, "-") : "unknown";
-  const filename = `trace-${entry.stage}-${timestamp}.txt`;
+  const filename = `trace-${entry.stage || "entry"}-${timestamp}.json`;
 
   const a = document.createElement("a");
   a.href = url;
@@ -505,13 +507,6 @@ ${entry.prompt}</pre
   `;
 }
 
-function formatSessionKey(sessionKey?: string): string {
-  if (!sessionKey) {
-    return "";
-  }
-  return sessionKey;
-}
-
 function renderSummaryRow(
   summary: TraceSummary,
   onViewDetail: (s: TraceSummary) => void,
@@ -532,7 +527,7 @@ function renderSummaryRow(
         <div class="trace-cell-stacked">
           ${summary.sessionKey
             ? html`<span class="trace-session-key mono" title="${summary.sessionKey}"
-                >${formatSessionKey(summary.sessionKey)}</span
+                >${summary.sessionKey}</span
               >`
             : nothing}
           <span class="trace-stage badge ${stageBadgeClass(summary.stage)}">${summary.stage}</span>

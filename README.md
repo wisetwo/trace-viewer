@@ -20,10 +20,10 @@ Built for debugging and inspecting the full context that is sent to LLM provider
 
 ```bash
 # Install globally
-npm install -g @aspect-build/trace-viewer
+npm install -g trace-viewer
 
 # Or use npx (no install required)
-npx @aspect-build/trace-viewer ./path/to/trace.jsonl
+npx trace-viewer ./path/to/trace.jsonl
 ```
 
 ## Quick Start
@@ -137,7 +137,7 @@ If `content` is a plain string, it is rendered as text directly. Base64 image st
 You can also use the server programmatically:
 
 ```typescript
-import { createServer } from "@aspect-build/trace-viewer";
+import { createServer } from "trace-viewer";
 
 const server = await createServer({
   port: 3000,
@@ -157,7 +157,7 @@ await server.stop();
 The package exports all type definitions for building custom integrations:
 
 ```typescript
-import type { TraceEntry, TraceSummary, TraceToolDef } from "@aspect-build/trace-viewer/types";
+import type { TraceEntry, TraceSummary, TraceToolDef } from "trace-viewer/types";
 ```
 
 ## Development
