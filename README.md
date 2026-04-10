@@ -16,6 +16,44 @@ Built for debugging and inspecting the full context that is sent to LLM provider
 - 💾 **Download** — Export individual trace entries as JSON
 - 👀 **Watch mode** — Auto-refresh when the log file changes
 
+## Screenshots
+
+![Default View](./docs/screenshots/default-view.png)
+
+![Detail Modal](./docs/screenshots/detail-modal.png)
+
+## Usage with OpenClaw
+
+If you're using [OpenClaw](https://docs.openclaw.ai), you can enable `diagnostics.cacheTrace` to log LLM request traces, then use this tool to visualize them.
+
+### 1. Enable cache trace logging
+
+Add the following to your OpenClaw config (e.g. `~/.openclaw/config.yaml`):
+
+```yaml
+diagnostics:
+  cacheTrace:
+    enabled: true
+```
+
+Or use an environment variable for a one-off session:
+
+```bash
+OPENCLAW_CACHE_TRACE=1 openclaw
+```
+
+See the [Prompt Caching documentation](https://docs.openclaw.ai/reference/prompt-caching#diagnostics-cachetrace-config) for the full list of options.
+
+### 2. View the trace log
+
+```bash
+# Default log location
+trace-viewer ~/.openclaw/logs/cache-trace.jsonl
+
+# Watch mode — auto-refreshes as new entries are appended
+trace-viewer ~/.openclaw/logs/cache-trace.jsonl --watch
+```
+
 ## Installation
 
 ```bash
