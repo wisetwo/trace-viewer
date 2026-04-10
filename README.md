@@ -28,12 +28,19 @@ If you're using [OpenClaw](https://docs.openclaw.ai), you can enable `diagnostic
 
 ### 1. Enable cache trace logging
 
-Add the following to your OpenClaw config (e.g. `~/.openclaw/config.yaml`):
+Add the following to your OpenClaw config (`~/.openclaw/openclaw.json`):
 
-```yaml
-diagnostics:
-  cacheTrace:
-    enabled: true
+```json
+{
+  "diagnostics": {
+    "cacheTrace": {
+      "enabled": true,
+      "includeMessages": true,
+      "includePrompt": true,
+      "includeSystem": true
+    }
+  }
+}
 ```
 
 Or use an environment variable for a one-off session:
