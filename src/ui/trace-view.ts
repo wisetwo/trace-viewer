@@ -127,7 +127,7 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
     if (isBase64Image(content)) {
       return html`<span class="trace-base64">${truncateBase64(content)}</span>`;
     }
-    return html`<span class="trace-text-content">${renderTextContent(content)}</span>`;
+    return html`<div class="trace-content-block trace-text-content">${renderTextContent(content)}</div>`;
   }
 
   if (Array.isArray(content)) {
@@ -167,7 +167,7 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
 
     if (obj.type === "text" && typeof obj.text === "string") {
       return html`
-        <div class="trace-text-block">
+        <div class="trace-text-block trace-content-block">
           <span class="trace-content-type">[text]</span>
           <div class="trace-text-content">${renderTextContent(obj.text)}</div>
         </div>
@@ -176,7 +176,7 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
 
     if (obj.type === "thinking" && typeof obj.thinking === "string") {
       return html`
-        <div class="trace-thinking-block">
+        <div class="trace-thinking-block trace-content-block trace-content-block--thinking">
           <span class="trace-content-type">[thinking]</span>
           <div class="trace-text-content">${renderTextContent(obj.thinking)}</div>
         </div>
@@ -185,7 +185,7 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
 
     if (obj.type === "tool_use") {
       return html`
-        <div class="trace-tool-block">
+        <div class="trace-tool-block trace-content-block trace-content-block--tool">
           <span class="trace-content-type">[${obj.type}: ${obj.name || "unknown"}]</span>
           <pre class="trace-tool-args">${JSON.stringify(obj.input, null, 2)}</pre>
         </div>
@@ -194,7 +194,7 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
 
     if (obj.type === "toolCall") {
       return html`
-        <div class="trace-tool-block">
+        <div class="trace-tool-block trace-content-block trace-content-block--tool">
           <span class="trace-content-type">[${obj.type}: ${obj.name || "unknown"}]</span>
           <pre class="trace-tool-args">${JSON.stringify(obj.arguments, null, 2)}</pre>
         </div>
@@ -435,7 +435,7 @@ function renderDetailModal(entry: TraceEntry, loading: boolean, onClose: () => v
                       <div class="trace-flat-section">
                         <h3 class="trace-flat-title">System Prompt</h3>
                         <div class="trace-expandable-container">
-                          <pre class="trace-system-content trace-expandable-content">
+                          <pre class="trace-content-block trace-expandable-content">
 ${systemContent}</pre
                           >
                           <button class="trace-expand-btn" @click=${toggleExpand}>
@@ -452,7 +452,7 @@ ${systemContent}</pre
                       <div class="trace-flat-section">
                         <h3 class="trace-flat-title">Prompt</h3>
                         <div class="trace-expandable-container">
-                          <pre class="trace-prompt-content trace-expandable-content">
+                          <pre class="trace-content-block trace-expandable-content">
 ${entry.prompt}</pre
                           >
                           <button class="trace-expand-btn" @click=${toggleExpand}>
@@ -505,7 +505,7 @@ ${entry.prompt}</pre
                   ? html`
                       <div class="trace-flat-section">
                         <h3 class="trace-flat-title trace-flat-title--danger">Error</h3>
-                        <div class="trace-error-content">${entry.error}</div>
+                        <div class="trace-content-block trace-content-block--error">${entry.error}</div>
                       </div>
                     `
                   : nothing}

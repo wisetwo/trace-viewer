@@ -693,24 +693,35 @@ export const traceStyles = `
     background: none;
   }
 
-  .trace-system-content,
-  .trace-prompt-content {
+  /* Unified content block base style */
+  .trace-content-block {
     margin: 0;
-    font-size: 0.85em;
-    white-space: pre-wrap;
-    word-break: break-word;
+    padding: 12px 14px;
     background: var(--bg-secondary);
-    padding: 14px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
+    font-size: 0.85em;
     line-height: 1.6;
   }
 
-  .trace-error-content {
-    padding: 12px;
+  pre.trace-content-block {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .trace-content-block--thinking {
+    border-left: 3px solid var(--color-warn);
+    background: var(--color-warn-bg);
+  }
+
+  .trace-content-block--tool {
+    border-left: 3px solid var(--color-info);
+    background: var(--color-info-bg);
+  }
+
+  .trace-content-block--error {
     color: var(--color-danger);
     background: var(--color-danger-bg);
-    border-radius: var(--radius-sm);
     border: 1px solid var(--color-danger-border);
   }
 
@@ -791,7 +802,6 @@ export const traceStyles = `
   .trace-text-content {
     white-space: pre-wrap;
     word-break: break-word;
-    font-size: 0.92em;
     line-height: 1.6;
   }
 
@@ -808,20 +818,6 @@ export const traceStyles = `
   .trace-thinking-block,
   .trace-tool-block {
     margin: 8px 0;
-    padding: 12px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-  }
-
-  .trace-thinking-block {
-    border-left: 3px solid var(--color-warn);
-    background: var(--color-warn-bg);
-  }
-
-  .trace-tool-block {
-    border-left: 3px solid var(--color-info);
-    background: var(--color-info-bg);
   }
 
   .trace-tool-args {
