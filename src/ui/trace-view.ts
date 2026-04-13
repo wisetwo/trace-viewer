@@ -183,10 +183,19 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
       `;
     }
 
+    if (obj.type === "tool_use") {
+      return html`
+        <div class="trace-tool-block">
+          <span class="trace-content-type">[${obj.type}: ${obj.name || "unknown"}]</span>
+          <pre class="trace-tool-args">${JSON.stringify(obj.input, null, 2)}</pre>
+        </div>
+      `;
+    }
+
     if (obj.type === "toolCall") {
       return html`
         <div class="trace-tool-block">
-          <span class="trace-content-type">[toolCall: ${obj.name || "unknown"}]</span>
+          <span class="trace-content-type">[${obj.type}: ${obj.name || "unknown"}]</span>
           <pre class="trace-tool-args">${JSON.stringify(obj.arguments, null, 2)}</pre>
         </div>
       `;

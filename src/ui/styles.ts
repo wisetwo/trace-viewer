@@ -277,7 +277,6 @@ export const traceStyles = `
     font-weight: 600;
     font-size: 0.8em;
     color: var(--text-muted);
-    text-transform: uppercase;
     letter-spacing: 0.04em;
     position: sticky;
     top: 0;
@@ -622,7 +621,6 @@ export const traceStyles = `
     flex-shrink: 0;
     min-width: 60px;
     font-weight: 600;
-    text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
@@ -750,7 +748,6 @@ export const traceStyles = `
     border-radius: 3px;
     font-weight: 700;
     letter-spacing: 0.04em;
-    text-transform: uppercase;
     line-height: 1.4;
   }
 
@@ -804,7 +801,6 @@ export const traceStyles = `
     margin-bottom: 6px;
     display: inline-block;
     font-weight: 600;
-    text-transform: uppercase;
     letter-spacing: 0.03em;
   }
 
