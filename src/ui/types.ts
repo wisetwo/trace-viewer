@@ -10,6 +10,7 @@ export type TraceStage = string & {};
 export interface TraceToolDef {
   name: string;
   description?: string;
+  parameters?: Record<string, unknown>;
   [key: string]: unknown;
 }
 

@@ -873,6 +873,89 @@ export const traceStyles = `
     word-break: break-word;
   }
 
+  /* Tool parameters */
+  .trace-tool-params {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+  }
+
+  .trace-tool-params-title {
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  .trace-param-props {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .trace-param-item {
+    padding: 6px 10px;
+    background: var(--bg-surface);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+  }
+
+  .trace-param-header {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .trace-param-name {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .trace-param-type {
+    font-size: 0.75em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--color-info-bg);
+    color: var(--color-info);
+    border: 1px solid var(--color-info-border);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+
+  .trace-param-required {
+    font-size: 0.7em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger-border);
+    font-weight: 600;
+  }
+
+  .trace-param-enum {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+
+  .trace-param-desc {
+    margin-top: 3px;
+    font-size: 0.8em;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .trace-param-items-label {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 4px;
+    margin-left: 12px;
+  }
+
   .trace-image-container {
     margin: 8px 0;
   }

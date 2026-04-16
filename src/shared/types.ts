@@ -27,6 +27,8 @@ export interface TraceToolDef {
   name: string;
   /** Human-readable description */
   description?: string;
+  /** JSON Schema for the tool's input parameters */
+  parameters?: Record<string, unknown>;
   /** Additional properties are preserved */
   [key: string]: unknown;
 }

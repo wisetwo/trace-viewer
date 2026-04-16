@@ -274,7 +274,73 @@ export function setupOverflowDetection(root?: Document | DocumentFragment | Shad
   });
 }
 
+function renderJsonSchemaProperties(
+  properties: Record<string, Record<string, unknown>>,
+  required: string[] = [],
+  depth = 0,
+): ReturnType<typeof html> | typeof nothing {
+  const entries = Object.entries(properties);
+  if (entries.length === 0) {
+    return nothing;
+  }
+
+  return html`
+    <div class="trace-param-props" style="margin-left: ${depth > 0 ? 12 : 0}px">
+      ${entries.map(([name, schema]) => {
+        const isRequired = required.includes(name);
+        const type = schema.type as string | undefined;
+        const desc = schema.description as string | undefined;
+        const enumValues = schema.enum as string[] | undefined;
+        const items = schema.items as Record<string, unknown> | undefined;
+        const nestedProps = schema.properties as
+          | Record<string, Record<string, unknown>>
+          | undefined;
+        const nestedRequired = schema.required as string[] | undefined;
+
+        return html`
+          <div class="trace-param-item">
+            <div class="trace-param-header">
+              <span class="trace-param-name">${name}</span>
+              ${type
+                ? html`<span class="trace-param-type">${type}${type === "array" && items?.type ? `[${items.type}]` : ""}</span>`
+                : nothing}
+              ${isRequired
+                ? html`<span class="trace-param-required">required</span>`
+                : nothing}
+              ${enumValues
+                ? html`<span class="trace-param-enum">${enumValues.map((v) => `"${v}"`).join(" | ")}</span>`
+                : nothing}
+            </div>
+            ${desc
+              ? html`<div class="trace-param-desc">${desc}</div>`
+              : nothing}
+            ${nestedProps
+              ? renderJsonSchemaProperties(nestedProps, nestedRequired ?? [], depth + 1)
+              : nothing}
+            ${items && items.properties
+              ? html`
+                  <div class="trace-param-items-label">items:</div>
+                  ${renderJsonSchemaProperties(
+                    items.properties as Record<string, Record<string, unknown>>,
+                    (items.required as string[]) ?? [],
+                    depth + 1,
+                  )}
+                `
+              : nothing}
+          </div>
+        `;
+      })}
+    </div>
+  `;
+}
+
 function renderToolDef(tool: TraceToolDef) {
+  const params = tool.parameters as Record<string, unknown> | undefined;
+  const properties = params?.properties as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const required = params?.required as string[] | undefined;
+
   return html`
     <div class="trace-tool-def">
       <div class="trace-tool-def-header">
@@ -282,6 +348,14 @@ function renderToolDef(tool: TraceToolDef) {
       </div>
       ${tool.description
         ? html`<div class="trace-tool-description">${tool.description}</div>`
+        : nothing}
+      ${properties
+        ? html`
+            <div class="trace-tool-params">
+              <div class="trace-tool-params-title">Parameters</div>
+              ${renderJsonSchemaProperties(properties, required ?? [])}
+            </div>
+          `
         : nothing}
     </div>
   `;
