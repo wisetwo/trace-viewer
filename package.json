@@ -1,6 +1,6 @@
 {
   "name": "llm-trace-viewer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A standalone CLI tool to view LLM request trace logs (JSONL format) in a beautiful web UI",
   "keywords": [
     "cli",
