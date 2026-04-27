@@ -122,30 +122,59 @@ export async function createServer(options: ServerOptions): Promise<ServerInstan
     app,
     start: () =>
       new Promise((resolve, reject) => {
-        try {
-          server = app.listen(port, () => {
-            const url = `http://localhost:${port}`;
-            console.log(`\n  🔍 LLM Trace Viewer`);
-            console.log(`  ───────────────────────────────`);
-            console.log(`  📁 File:   ${reader.getFilePath()}`);
-            console.log(`  🌐 URL:    ${url}`);
-            if (watch) {
-              console.log(`  👀 Watch:  enabled`);
-            }
-            console.log(`  ───────────────────────────────\n`);
-            resolve({ url });
-          });
+        let currentPort = port;
 
-          server.on("error", (err: NodeJS.ErrnoException) => {
-            if (err.code === "EADDRINUSE") {
-              reject(new Error(`Port ${port} is already in use`));
-            } else {
+        const startListening = () => {
+          try {
+            const nextServer = app.listen(currentPort);
+            server = nextServer;
+
+            const cleanup = () => {
+              nextServer.off("listening", handleListening);
+              nextServer.off("error", handleError);
+            };
+
+            const handleListening = () => {
+              cleanup();
+              const url = `http://localhost:${currentPort}`;
+              console.log(`\n  🔍 LLM Trace Viewer`);
+              console.log(`  ───────────────────────────────`);
+              console.log(`  📁 File:   ${reader.getFilePath()}`);
+              console.log(`  🌐 URL:    ${url}`);
+              if (watch) {
+                console.log(`  👀 Watch:  enabled`);
+              }
+              console.log(`  ───────────────────────────────\n`);
+              resolve({ url });
+            };
+
+            const handleError = (err: NodeJS.ErrnoException) => {
+              cleanup();
+
+              if (err.code === "EADDRINUSE") {
+                if (currentPort >= 65535) {
+                  reject(new Error(`No available port found starting from ${port}`));
+                  return;
+                }
+
+                const occupiedPort = currentPort;
+                currentPort += 1;
+                console.warn(`Port ${occupiedPort} is already in use, trying ${currentPort}...`);
+                startListening();
+                return;
+              }
+
               reject(err);
-            }
-          });
-        } catch (err) {
-          reject(err);
-        }
+            };
+
+            nextServer.once("listening", handleListening);
+            nextServer.once("error", handleError);
+          } catch (err) {
+            reject(err);
+          }
+        };
+
+        startListening();
       }),
     stop: () =>
       new Promise((resolve) => {

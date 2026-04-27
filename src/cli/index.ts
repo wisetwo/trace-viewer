@@ -17,7 +17,9 @@ const program = new Command();
 program
   .name("llm-trace-viewer")
   .description("View LLM request trace logs in a web UI")
-  .version(pkg.version)
+  .version(pkg.version, "-v, --version", "Show version number")
+  .helpOption("-h, --help", "Show help information")
+  .showHelpAfterError()
   .argument("<path>", "Path to trace file (.jsonl) or directory")
   .option("-p, --port <number>", "Port to listen on", "3000")
   .option("--no-open", "Do not open browser automatically")

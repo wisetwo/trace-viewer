@@ -85,14 +85,22 @@ llm-trace-viewer ./logs/trace.jsonl --port 8080 --watch
 
 # Don't auto-open browser
 llm-trace-viewer ./logs/trace.jsonl --no-open
+
+# Show help / version
+llm-trace-viewer -h
+llm-trace-viewer -v
 ```
+
+> If the requested port is already in use, the viewer will automatically try the next port (`3000`, `3001`, `3002`, ...).
 
 ## CLI Options
 
 | Option                | Description             | Default |
 | --------------------- | ----------------------- | ------- |
+| `-h, --help`          | Show help information   | — |
+| `-v, --version`       | Show version number     | — |
 | `<path>`              | Path to `.jsonl` file or directory (required) | — |
-| `-p, --port <number>` | Port to listen on       | `3000`  |
+| `-p, --port <number>` | Port to listen on (auto-increments if occupied) | `3000`  |
 | `--no-open`           | Don't auto-open browser | `false` |
 | `-w, --watch`         | Watch file for changes  | `false` |
 
