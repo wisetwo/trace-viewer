@@ -49,14 +49,27 @@ program
       }
 
       // Handle graceful shutdown
+      let shuttingDown = false;
       const shutdown = async () => {
+        if (shuttingDown) {
+          return;
+        }
+        shuttingDown = true;
+
         console.log("\n\nShutting down...");
-        await server.stop();
-        process.exit(0);
+        try {
+          await server.stop();
+        } finally {
+          process.exit(0);
+        }
       };
 
-      process.on("SIGINT", shutdown);
-      process.on("SIGTERM", shutdown);
+      process.once("SIGINT", () => {
+        void shutdown();
+      });
+      process.once("SIGTERM", () => {
+        void shutdown();
+      });
     } catch (err) {
       console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);

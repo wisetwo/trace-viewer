@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { Socket } from "node:net";
 import express, { type Express, type Request, type Response } from "express";
 import { TraceReader, resolveTraceFile } from "./trace-reader.js";
 
@@ -117,6 +118,23 @@ export async function createServer(options: ServerOptions): Promise<ServerInstan
   }
 
   let server: ReturnType<typeof app.listen> | null = null;
+  const sockets = new Set<Socket>();
+
+  const trackServerConnections = (nextServer: ReturnType<typeof app.listen>) => {
+    nextServer.on("connection", (socket) => {
+      sockets.add(socket);
+      socket.once("close", () => {
+        sockets.delete(socket);
+      });
+    });
+  };
+
+  const destroyTrackedSockets = () => {
+    for (const socket of sockets) {
+      socket.destroy();
+    }
+    sockets.clear();
+  };
 
   return {
     app,
@@ -128,6 +146,7 @@ export async function createServer(options: ServerOptions): Promise<ServerInstan
           try {
             const nextServer = app.listen(currentPort);
             server = nextServer;
+            trackServerConnections(nextServer);
 
             const cleanup = () => {
               nextServer.off("listening", handleListening);
@@ -180,12 +199,49 @@ export async function createServer(options: ServerOptions): Promise<ServerInstan
       new Promise((resolve) => {
         if (watcher) {
           watcher.close();
+          watcher = null;
         }
-        if (server) {
-          server.close(() => resolve());
-        } else {
+
+        if (!server) {
+          destroyTrackedSockets();
           resolve();
+          return;
         }
+
+        const currentServer = server;
+        server = null;
+        let finished = false;
+
+        const finish = () => {
+          if (finished) {
+            return;
+          }
+          finished = true;
+          clearTimeout(forceCloseTimer);
+          resolve();
+        };
+
+        const forceCloseTimer = setTimeout(() => {
+          if (typeof currentServer.closeAllConnections === "function") {
+            currentServer.closeAllConnections();
+          }
+          destroyTrackedSockets();
+          finish();
+        }, 500);
+        forceCloseTimer.unref();
+
+        currentServer.close(() => {
+          destroyTrackedSockets();
+          finish();
+        });
+
+        if (typeof currentServer.closeIdleConnections === "function") {
+          currentServer.closeIdleConnections();
+        }
+        if (typeof currentServer.closeAllConnections === "function") {
+          currentServer.closeAllConnections();
+        }
+        destroyTrackedSockets();
       }),
   };
 }
