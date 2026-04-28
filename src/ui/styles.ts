@@ -662,6 +662,15 @@ export const traceStyles = `
     overflow-y: auto;
   }
 
+  .trace-expandable-container.overflowing .trace-expandable-content {
+    cursor: pointer;
+  }
+
+  .trace-expandable-container.overflowing .trace-expandable-content:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   .trace-expandable-container.expanded .trace-expandable-content {
     max-height: none;
   }

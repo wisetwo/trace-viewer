@@ -227,38 +227,139 @@ function renderMessageContent(content: unknown): ReturnType<typeof html> {
   return html`<span class="trace-value">${stringValue}</span>`;
 }
 
-function toggleExpand(e: Event) {
-  const btn = e.target as HTMLElement;
-  const container = btn.closest(".trace-expandable-container");
+const SHOW_MORE_LABEL = "Show more ↓";
+const SHOW_LESS_LABEL = "Show less ↑";
+const EXPANDABLE_IGNORE_SELECTOR = [
+  "button",
+  "a",
+  "input",
+  "textarea",
+  "select",
+  "option",
+  "summary",
+  "details",
+  "label",
+  "img",
+  "video",
+  "audio",
+  "iframe",
+  "[role=\"button\"]",
+  ".trace-image-clickable",
+].join(", ");
+
+function findExpandableContainer(target: EventTarget | null) {
+  return target instanceof HTMLElement
+    ? (target.closest(".trace-expandable-container") as HTMLElement | null)
+    : null;
+}
+
+function getExpandableContent(container: Element) {
+  return container.querySelector(".trace-expandable-content") as HTMLElement | null;
+}
+
+function syncExpandableState(container: Element) {
+  const content = getExpandableContent(container);
+  const btn = container.querySelector(".trace-expand-btn") as HTMLButtonElement | null;
+  const isOverflowing = container.classList.contains("overflowing");
+  const isExpanded = isOverflowing && container.classList.contains("expanded");
+
+  if (content) {
+    if (isOverflowing) {
+      content.setAttribute("role", "button");
+      content.setAttribute("tabindex", "0");
+    } else {
+      content.removeAttribute("role");
+      content.removeAttribute("tabindex");
+    }
+    content.setAttribute("aria-expanded", String(isExpanded));
+  }
+
+  if (btn) {
+    btn.textContent = isExpanded ? SHOW_LESS_LABEL : SHOW_MORE_LABEL;
+    btn.setAttribute("aria-expanded", String(isExpanded));
+  }
+}
+
+function toggleExpand(container: Element) {
+  if (!container.classList.contains("overflowing")) {
+    return;
+  }
+
+  container.classList.toggle("expanded");
+  syncExpandableState(container);
+}
+
+function handleExpandButtonClick(e: Event) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const container = findExpandableContainer(e.currentTarget ?? e.target);
   if (!container) {
     return;
   }
 
-  const content = container.querySelector(".trace-expandable-content") as HTMLElement;
-  if (!content) {
+  toggleExpand(container);
+}
+
+function shouldIgnoreExpandableClick(
+  target: EventTarget | null,
+  currentTarget: EventTarget | null,
+) {
+  if (!(target instanceof HTMLElement) || !(currentTarget instanceof HTMLElement)) {
+    return false;
+  }
+
+  const interactiveAncestor = target.closest(EXPANDABLE_IGNORE_SELECTOR);
+  return interactiveAncestor !== null && interactiveAncestor !== currentTarget;
+}
+
+function handleExpandableContentClick(e: Event) {
+  if (shouldIgnoreExpandableClick(e.target, e.currentTarget)) {
     return;
   }
 
-  const isExpanded = container.classList.contains("expanded");
-  if (isExpanded) {
-    container.classList.remove("expanded");
-    btn.textContent = "Show more \u2193";
-  } else {
-    container.classList.add("expanded");
-    btn.textContent = "Show less \u2191";
+  const selection = window.getSelection()?.toString().trim();
+  if (selection) {
+    return;
   }
+
+  const container = findExpandableContainer(e.currentTarget ?? e.target);
+  if (!container) {
+    return;
+  }
+
+  toggleExpand(container);
+}
+
+function handleExpandableContentKeydown(e: KeyboardEvent) {
+  if (e.key !== "Enter" && e.key !== " ") {
+    return;
+  }
+
+  e.preventDefault();
+
+  const container = findExpandableContainer(e.currentTarget ?? e.target);
+  if (!container) {
+    return;
+  }
+
+  toggleExpand(container);
 }
 
 function checkOverflow(container: Element) {
-  const content = container.querySelector(".trace-expandable-content") as HTMLElement;
+  const content = getExpandableContent(container);
   if (!content) {
     return;
   }
+
   if (content.scrollHeight > 350) {
     container.classList.add("overflowing");
   } else {
     container.classList.remove("overflowing");
+    container.classList.remove("expanded");
   }
+
+  syncExpandableState(container);
 }
 
 export function setupOverflowDetection(root?: Document | DocumentFragment | ShadowRoot | Element) {
@@ -378,8 +479,17 @@ function renderMessage(message: unknown, index: number) {
         ${msg.model ? html`<span class="trace-message-model mono">${msg.model}</span>` : nothing}
       </div>
       <div class="trace-message-body trace-expandable-container">
-        <div class="trace-expandable-content">${renderMessageContent(content)}</div>
-        <button class="trace-expand-btn" @click=${toggleExpand}>Show more ↓</button>
+        <div
+          class="trace-expandable-content"
+          aria-expanded="false"
+          @click=${handleExpandableContentClick}
+          @keydown=${handleExpandableContentKeydown}
+        >
+          ${renderMessageContent(content)}
+        </div>
+        <button class="trace-expand-btn" @click=${handleExpandButtonClick} aria-expanded="false">
+          Show more ↓
+        </button>
       </div>
     </div>
   `;
@@ -509,10 +619,19 @@ function renderDetailModal(entry: TraceEntry, loading: boolean, onClose: () => v
                       <div class="trace-flat-section">
                         <h3 class="trace-flat-title">System Prompt</h3>
                         <div class="trace-expandable-container">
-                          <pre class="trace-content-block trace-expandable-content">
+                          <pre
+                            class="trace-content-block trace-expandable-content"
+                            aria-expanded="false"
+                            @click=${handleExpandableContentClick}
+                            @keydown=${handleExpandableContentKeydown}
+                          >
 ${systemContent}</pre
                           >
-                          <button class="trace-expand-btn" @click=${toggleExpand}>
+                          <button
+                            class="trace-expand-btn"
+                            @click=${handleExpandButtonClick}
+                            aria-expanded="false"
+                          >
                             Show more ↓
                           </button>
                         </div>
@@ -526,10 +645,19 @@ ${systemContent}</pre
                       <div class="trace-flat-section">
                         <h3 class="trace-flat-title">Prompt</h3>
                         <div class="trace-expandable-container">
-                          <pre class="trace-content-block trace-expandable-content">
+                          <pre
+                            class="trace-content-block trace-expandable-content"
+                            aria-expanded="false"
+                            @click=${handleExpandableContentClick}
+                            @keydown=${handleExpandableContentKeydown}
+                          >
 ${entry.prompt}</pre
                           >
-                          <button class="trace-expand-btn" @click=${toggleExpand}>
+                          <button
+                            class="trace-expand-btn"
+                            @click=${handleExpandButtonClick}
+                            aria-expanded="false"
+                          >
                             Show more ↓
                           </button>
                         </div>
@@ -563,10 +691,19 @@ ${entry.prompt}</pre
                           <span class="trace-count">(${entry.tools.length})</span>
                         </h3>
                         <div class="trace-expandable-container">
-                          <div class="trace-tools-list trace-expandable-content">
+                          <div
+                            class="trace-tools-list trace-expandable-content"
+                            aria-expanded="false"
+                            @click=${handleExpandableContentClick}
+                            @keydown=${handleExpandableContentKeydown}
+                          >
                             ${entry.tools.map((tool: TraceToolDef) => renderToolDef(tool))}
                           </div>
-                          <button class="trace-expand-btn" @click=${toggleExpand}>
+                          <button
+                            class="trace-expand-btn"
+                            @click=${handleExpandButtonClick}
+                            aria-expanded="false"
+                          >
                             Show more ↓
                           </button>
                         </div>
